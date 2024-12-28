@@ -15,7 +15,17 @@ export default class MyPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-
+		
+		// Show Hello World notices and console message
+		console.log('Hello World from Console 222!');
+		new Notice('Hello World!');
+		setTimeout(() => {
+			new Notice('Hello World Again!');
+		}, 1000);
+		setTimeout(() => {
+			new Notice('Hello World One More Time!');
+		}, 3000);
+		
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
