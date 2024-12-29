@@ -1,95 +1,66 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Notice, Plugin, PluginSettingTab, Setting, App } from 'obsidian';
+import { CanvaView } from './canvaView';
 
-// Remember to rename these classes and interfaces!
-
-interface MyPluginSettings {
-	mySetting: string;
+interface CanvaPluginSettings {
+	defaultView: 'presentation' | 'document';
+	autoPlay: boolean;
+	autoPlayInterval: number;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
-}
+const DEFAULT_SETTINGS: CanvaPluginSettings = {
+	defaultView: 'presentation',
+	autoPlay: false,
+	autoPlayInterval: 3000
+};
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class CanvaPlugin extends Plugin {
+	settings: CanvaPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
-		
-		// Show Hello World notices and console message
-		console.log('Hello World from Console 222!');
-		new Notice('Hello World!');
-		setTimeout(() => {
-			new Notice('Hello World Again!');
-		}, 1000);
-		setTimeout(() => {
-			new Notice('Hello World One More Time!');
-		}, 3000);
-		
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
+		// Register Canva code block processor with enhanced validation and error handling
+		this.registerMarkdownCodeBlockProcessor('canva', (source, el, ctx) => {
+			try {
+				const url = source.trim();
 
-		// This adds a simple command that can be triggered anywhere
-		this.addCommand({
-			id: 'open-sample-modal-simple',
-			name: 'Open sample modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'sample-editor-command',
-			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-sample-modal-complex',
-			name: 'Open sample modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
+				// Validate Canva URL
+				if (!this.isValidCanvaUrl(url)) {
+					this.showError(el, 'Invalid Canva URL. Please use a URL starting with https://www.canva.com/design/');
+					return;
 				}
+
+				// Create Canva view with current settings
+				new CanvaView(url, el);
+			} catch (error) {
+				console.error('Error processing Canva block:', error);
+				this.showError(el, 'Failed to load Canva design. Please check your URL and try again.');
 			}
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		// Add settings tab
+		this.addSettingTab(new CanvaSettingTab(this.app, this));
 	}
 
-	onunload() {
+	private isValidCanvaUrl(url: string): boolean {
+		try {
+			const urlObj = new URL(url);
+			return urlObj.hostname === 'www.canva.com' &&
+				urlObj.pathname.startsWith('/design/') &&
+				urlObj.pathname.split('/').length >= 3;
+		} catch {
+			return false;
+		}
+	}
 
+	private showError(container: HTMLElement, message: string) {
+		container.empty();
+		container.createEl('div', {
+			text: message,
+			attr: {
+				style: 'color: #c62828; padding: 1em; background: #ffebee; border: 1px solid #ffcdd2; border-radius: 4px;'
+			}
+		});
 	}
 
 	async loadSettings() {
@@ -101,43 +72,51 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
+class CanvaSettingTab extends PluginSettingTab {
+	plugin: CanvaPlugin;
 
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
-	}
-}
-
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: CanvaPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
 	display(): void {
 		const {containerEl} = this;
-
 		containerEl.empty();
 
+		containerEl.createEl('h2', {text: 'Canva Embed Settings'});
+
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+			.setName('Default View Mode')
+			.setDesc('Choose how Canva designs are displayed by default')
+			.addDropdown(dropdown => dropdown
+				.addOption('presentation', 'Presentation')
+				.addOption('document', 'Document')
+				.setValue(this.plugin.settings.defaultView)
+				.onChange(async (value: 'presentation' | 'document') => {
+					this.plugin.settings.defaultView = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Auto-Play')
+			.setDesc('Automatically advance slides in presentation mode')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.autoPlay)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.autoPlay = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Auto-Play Interval')
+			.setDesc('Time between slides (in milliseconds)')
+			.addSlider(slider => slider
+				.setLimits(1000, 10000, 500)
+				.setValue(this.plugin.settings.autoPlayInterval)
+				.setDynamicTooltip()
+				.onChange(async (value) => {
+					this.plugin.settings.autoPlayInterval = value;
 					await this.plugin.saveSettings();
 				}));
 	}

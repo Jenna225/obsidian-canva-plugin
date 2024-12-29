@@ -5,7 +5,18 @@ This is a sample plugin for Obsidian (https://obsidian.md).
 This project uses TypeScript to provide type checking and documentation.
 The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
+This plugin allows you to embed Canva designs directly in your Obsidian notes.
+
+To use it, create a code block with the Canva URL:
+
+```canva
+https://www.canva.com/design/DAF12345678/view
+```
+
+Features:
+- Embed Canva designs in your notes
+- Automatic URL validation
+- Responsive design viewer
 - Adds a ribbon icon, which shows a Notice when clicked.
 - Adds a command "Open Sample Modal" which opens a Modal.
 - Adds a plugin setting tab to the settings page.
