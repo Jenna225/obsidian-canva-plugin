@@ -1,4 +1,4 @@
-# Obsidian Canva Integration
+# Obsidian Canva Embed
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/yourusername/obsidian-canva-plugin?style=for-the-badge&sort=semver)
 
