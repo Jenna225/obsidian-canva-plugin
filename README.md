@@ -4,6 +4,10 @@
 
 An Obsidian plugin that allows you to embed and view Canva designs directly in your notes.
 
+![Screenshot 2025-01-12 152629.png](image/Screenshot%202025-01-12%20152629.png)
+![Screenshot 2025-01-12 152615.png](image/Screenshot%202025-01-12%20152615.png)
+
+
 ## Features
 
 - 🎨 Embed Canva designs directly in your notes
