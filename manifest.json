@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "canva-obsidian",
+	"name": "Canva Embed",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Embed Canva designs directly in your Obsidian notes.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Embed and display Canva designs directly in your notes with responsive viewing support.",
+	"author": "Jenna Lin",
+	"authorUrl": "https://github.com/Jenna225",
 	"isDesktopOnly": false
 }
