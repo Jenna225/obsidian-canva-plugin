@@ -1,6 +1,6 @@
-# Obsidian Canva Embed
+# Obsidian Canva Integration
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/yourusername/obsidian-canva-plugin?style=for-the-badge&sort=semver)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Jenna225/obsidian-canva-plugin?style=for-the-badge&sort=semver)
 
 An Obsidian plugin that allows you to embed and view Canva designs directly in your notes.
 
@@ -26,15 +26,12 @@ To embed a Canva design, create a code block with the Canva URL:
 ```canva
 https://www.canva.com/design/DAF12345678/view
 ```
-```
 
 ### Commands
 The plugin adds several commands to Obsidian:
 - `Open Sample Modal`: Opens a configuration modal
 - More commands can be accessed via the command palette (Ctrl/Cmd + P)
 
-### Ribbon Icon
-A ribbon icon is available for quick access to plugin features. Click it to see available actions.
 
 ## Settings
 
